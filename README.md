@@ -1,88 +1,229 @@
+# Proteus.lab - Plataforma de Serviços de Impressão 3D
 
-# Proteus.lab - 3D Printing Service Platform
+![Proteus.lab Logo](https://via.placeholder.com/800x200/1D2D50/FFCF02?text=Proteus.lab)
 
-This is the main repository for the Proteus.lab 3D printing service platform, an e-commerce solution for custom 3D printing services.
+## Visão Geral
 
-## Repository Structure
+O Proteus.lab é uma plataforma de serviços de impressão 3D que conecta clientes a soluções de prototipagem rápida, modelagem 3D personalizada e produtos impressos em 3D. Nossa arquitetura de microserviços oferece uma experiência fluida, permitindo aos usuários solicitar orçamentos, visualizar portfólio de projetos e encomendar serviços de impressão 3D com facilidade.
 
-The project is divided into three separate repositories:
+## Arquitetura do Sistema
 
-1. **[proteuslab-frontend](https://github.com/yourusername/proteuslab-frontend)**: React frontend application
-2. **[proteuslab-api](https://github.com/yourusername/proteuslab-api)**: FastAPI backend application
-3. **[proteuslab-devops](https://github.com/yourusername/proteuslab-devops)** (this repository): DevOps, orchestration, and microservices
+O projeto segue uma arquitetura de microserviços, composta por três componentes principais distribuídos em repositórios separados:
 
-This structure separates concerns and allows for independent development and deployment of each component.
+```
+┌───────────────────┐     ┌────────────────────┐     ┌─────────────────┐
+│                   │     │                    │     │                 │
+│ Frontend (React)  │────▶│ API Principal      │────▶│ API Instagram   │
+│                   │◀────│ (FastAPI)          │◀────│                 │
+│                   │     │                    │     │                 │
+└───────────────────┘     └────────────────────┘     └─────────────────┘
+                                    │
+                                    ▼
+                          ┌────────────────────┐
+                          │                    │
+                          │  Banco de Dados    │
+                          │  (PostgreSQL)      │
+                          │                    │
+                          └────────────────────┘
+```
 
-## Overview
+## Repositórios
 
-Proteus.lab is a full-featured platform that provides:
+O projeto está organizado em três repositórios separados:
 
-- Product catalog and 3D printing services
-- Custom quotation system for 3D models
-- Order management and tracking
-- Portfolio showcase with Instagram integration
-- Admin dashboard for content management
+1. **Frontend (React)**  
+   Repositório: [https://github.com/cscheidegger/ecommerce-front.git](https://github.com/cscheidegger/ecommerce-front.git)  
+   Interface de usuário responsiva que permite aos clientes navegar por serviços, solicitar orçamentos e visualizar trabalhos anteriores.
 
-## Quick Start
+2. **API Principal (FastAPI)**  
+   Repositório: [https://github.com/cscheidegger/ecommerce-api.git](https://github.com/cscheidegger/ecommerce-api.git)  
+   Gerencia a lógica de negócios, processamento de pedidos, orçamentos e armazenamento de modelos 3D.
 
-### Prerequisites
+3. **DevOps (Configuração e Instagram API)**  
+   Repositório: [https://github.com/cscheidegger/e-commerce-devops.git](https://github.com/cscheidegger/e-commerce-devops.git)  
+   Contém a configuração Docker Compose, scripts de manutenção e o serviço de integração com Instagram.
 
-- Docker and Docker Compose
+## Pré-requisitos
+
+- Docker e Docker Compose
 - Git
-- Make (optional, for using Makefile commands)
+- Espaço em disco: mínimo 5GB
+- Acesso à internet para clonagem dos repositórios e download de imagens Docker
 
-### Setup
+## Instalação e Configuração
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/yourusername/proteuslab-devops.git
-   cd proteuslab-devops
-   ```
+### 1. Clone os Repositórios
 
-2. Create a `.env` file based on the `.env.example` template:
-   ```bash
-   cp .env.example .env
-   ```
+```bash
+# Clone o repositório DevOps
+git clone https://github.com/cscheidegger/e-commerce-devops.git
+cd e-commerce-devops
 
-3. Start all services:
-   ```bash
-   make up
-   # or
-   docker-compose up -d
-   ```
+# O docker-compose.yml já referencia os repositórios remotos, 
+# então não é necessário clonar os outros repositórios manualmente
+```
 
-4. Access the application:
-   - Frontend: http://localhost:5173
-   - API Documentation: http://localhost:8000/docs
+### 2. Configure as Variáveis de Ambiente
 
-## Services
+```bash
+# Copie o arquivo de exemplo e configure-o com seus valores
+cp .env.example .env
 
-This DevOps repository orchestrates and coordinates all services:
+# Edite o arquivo .env conforme necessário
+nano .env
+```
 
-- **Frontend**: React application for user interface
-- **Backend API**: FastAPI application providing REST endpoints
-- **Instagram Service**: Python microservice for Instagram integration
-- **PostgreSQL**: Database storage
-- **Redis**: Caching and session management
+### 3. Inicie os Serviços
 
-## Configuration
+```bash
+# Inicie todos os serviços utilizando Docker Compose
+docker-compose up -d
 
-All services can be configured through environment variables in the `.env` file.
-See `.env.example` for available options.
+# Verifique se todos os containers estão em execução
+docker-compose ps
+```
 
-## Development
+### 4. Acesse a Aplicação
 
-For development purposes, you can work on each repository independently:
+Após a inicialização bem-sucedida, a aplicação estará disponível em:
 
-- [proteuslab-frontend](https://github.com/yourusername/proteuslab-frontend): Frontend development
-- [proteuslab-api](https://github.com/yourusername/proteuslab-api): Backend development
-- This repository: DevOps and infrastructure
+- Frontend: http://localhost:3000
+- API Principal (Swagger): http://localhost:8000/docs
+- API Instagram: http://localhost:8001/docs
 
-## Deployment
+## Estrutura do Projeto DevOps
 
-The application is containerized and can be deployed using Docker Compose or to a Kubernetes cluster.
-Refer to the deployment documentation for more details.
+O repositório DevOps contém:
 
-## License
+```
+e-commerce-devops/
+├── docker-compose.yml       # Configuração para orquestração de todos os serviços
+├── .env.example             # Exemplo de variáveis de ambiente
+├── instagram-service/       # Código do serviço de integração com Instagram
+│   ├── Dockerfile           # Configuração do container para o serviço Instagram
+│   ├── requirements.txt     # Dependências Python
+│   └── app/                 # Código-fonte do serviço
+├── scripts/                 # Scripts utilitários
+│   ├── init-db.sh           # Inicialização do banco de dados
+│   └── backup.sh            # Backup do banco de dados
+└── uploads/                 # Diretório para armazenamento de arquivos enviados
+```
 
-[MIT License](LICENSE)
+## Detalhes dos Containers
+
+O sistema é composto pelos seguintes containers Docker:
+
+1. **frontend**: Aplicação React servida através do Nginx
+2. **api**: Aplicação FastAPI para a lógica de negócios
+3. **instagram-service**: Serviço de integração com Instagram
+4. **db**: Banco de dados PostgreSQL
+5. **pgadmin**: Interface web para administração do PostgreSQL (opcional)
+
+## Comandos Úteis
+
+```bash
+# Iniciar todos os serviços
+docker-compose up -d
+
+# Verificar status dos containers
+docker-compose ps
+
+# Ver logs de um serviço específico
+docker-compose logs -f frontend
+docker-compose logs -f api
+docker-compose logs -f instagram-service
+
+# Parar todos os serviços
+docker-compose down
+
+# Reconstruir imagens e iniciar (após alterações)
+docker-compose up -d --build
+```
+
+## Desenvolvimento Local
+
+### Frontend
+
+Se você deseja trabalhar no frontend localmente:
+
+```bash
+# Clone o repositório do frontend
+git clone https://github.com/cscheidegger/ecommerce-front.git
+cd ecommerce-front
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm run dev
+```
+
+### API Principal
+
+Para desenvolver a API localmente:
+
+```bash
+# Clone o repositório da API
+git clone https://github.com/cscheidegger/ecommerce-api.git
+cd ecommerce-api
+
+# Crie e ative um ambiente virtual
+python -m venv venv
+source venv/bin/activate  # No Windows: venv\Scripts\activate
+
+# Instale as dependências
+pip install -r requirements.txt
+
+# Execute a API em modo de desenvolvimento
+uvicorn app.main:app --reload
+```
+
+## Solução de Problemas
+
+### Os containers não iniciam corretamente
+
+Verifique os logs para identificar o problema:
+
+```bash
+docker-compose logs -f
+```
+
+### Problemas de conexão entre serviços
+
+Certifique-se de que os nomes de host no arquivo .env correspondem aos nomes dos serviços no docker-compose.yml.
+
+### Banco de dados não inicializa
+
+Execute o script de inicialização manualmente:
+
+```bash
+docker-compose exec db psql -U postgres -f /docker-entrypoint-initdb.d/init.sql
+```
+
+## Contribuição
+
+1. Clone o repositório específico que deseja modificar
+2. Crie uma branch para sua feature: `git checkout -b feature/nova-funcionalidade`
+3. Faça commit das alterações: `git commit -m 'Adiciona nova funcionalidade'`
+4. Push para a branch: `git push origin feature/nova-funcionalidade`
+5. Abra um Pull Request
+
+## Roadmap
+
+- [ ] Calculadora de custos automática para modelos 3D
+- [ ] Visualizador 3D online de arquivos .STL e .OBJ
+- [ ] Marketplace para fornecedores de serviços de impressão 3D
+- [ ] Editor paramétrico para criação de modelos simples online
+- [ ] Integração com serviços de pagamento
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## Contato
+
+Proteus.lab - [@proteus.lab](https://www.instagram.com/proteus.lab/) - proteus.lab3d@gmail.com
+
+---
+
+Desenvolvido por Caio Scheidegger
